@@ -1,0 +1,1 @@
+The components folder contains low-level components responsible for being part of big picture.

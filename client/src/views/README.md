@@ -1,0 +1,1 @@
+The views folder contains higher-level components responsible for rendering specific pages or sections of the app.
