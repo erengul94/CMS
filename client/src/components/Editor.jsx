@@ -95,8 +95,8 @@ const MyEditor = (props) => {
   };
 
   const hasHeaderBlock = (content) => {
-
-    const headerRegex = /<h[1-6]>[a-zA-Z0-9\s]+<\/h[1-6]>/g;
+    // /^<h[1-6]>\s*\S[\s\S]*<\/h[1-6]>$/;
+    const headerRegex = /^<h[1-6]>(?!\s*(?:<\/h[1-6]>|<img[^>]*>\s*<\/h[1-6]>))(?!\s*<br\s*\/?>)(?=.*[^\s<>])(?:[\w\W]*?<\/h[1-6]>|(<img[^>]*>)?(?=<\/h[1-6]>))/;
     return headerRegex.test(content);
   };
 
@@ -158,6 +158,9 @@ const MyEditor = (props) => {
         setSelectedAuthor(page.username)
         setEditorMode('edit');
       } else {
+        setExistingContent('');
+        setSelectedDate("");
+        setTitle("")
         setSelectedAuthor(user.username)
         setAuthors(authors)
         setEditorMode('create');
@@ -165,7 +168,7 @@ const MyEditor = (props) => {
       renderCount.current = renderCount.current + 1;
     };
     _page();
-  }, [mode]);
+  }, [editorMode]);
 
   const routeHome = () => {
     navigate('/');
