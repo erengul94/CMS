@@ -3,7 +3,7 @@ import { Container, Form, Row, Col } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 
 // project based imports
-import { UserContext } from '../context/UserContext';
+import UserContext from '../context/UserContext';
 import { createPage, editPage, getPage } from '../API/pageAPI';
 import image1 from '../assests/images/image1.png';
 import image2 from '../assests/images/image2.png';
@@ -47,7 +47,7 @@ const MyEditor = (props) => {
 
   const renderCount = useRef(0);
 
-  const { user } = useContext(UserContext);
+  const { user, authenticated, notification, setNotification } = useContext(UserContext);
 
   const navigate = useNavigate();
 
@@ -68,7 +68,7 @@ const MyEditor = (props) => {
 
   const handleTitleChange = (value) => {
     setTitle(value);
-    console.log(value)
+    // console.log(value)
 
   }
 
@@ -80,18 +80,18 @@ const MyEditor = (props) => {
     else (
       handleUpdate(pageID)
     )
-    console.log(existingContent);
-    console.log(selectedDate);
+    // console.log(existingContent);
+    // console.log(selectedDate);
   };
 
   const handleText = (value) => {
     setExistingContent(value);
-    console.log(value)
+    // console.log(value)
   };
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    console.log(date)
+    // console.log(date)
   };
 
   const hasHeaderBlock = (content) => {
@@ -112,16 +112,23 @@ const MyEditor = (props) => {
       publicationDate: selectedDate ? dayjs(selectedDate).format('YYYY-MM-DD') : null, title: title
     };
     if (!hasHeaderBlock(existingContent)) {
-      alert("Page must have at least one header block");
+      setNotification({ message: "Page must have at least one header block", type: "warning", seconds: 5000 })
       return;
     }
 
     if (!hasContentBlock(existingContent)) {
-      alert("Page must have at least one paragraph or image block");
+      setNotification({ message: "Page must have at least one paragraph or image block", type: "warning", seconds: 5000 })
       return;
     }
-    const resp = await createPage(_page);
-    routeHome()
+    try {
+      const resp = await createPage(_page);
+      setNotification({ message: `Page succesfully created`, type: "info", seconds: 3000 })
+      routeHome()
+
+    } catch (err) {
+      setNotification({ message: `Page can not created}`, type: "danger", seconds: 5000 })
+    }
+
   };
 
   const handleUpdate = async (pageID) => {
@@ -131,30 +138,37 @@ const MyEditor = (props) => {
       title: title
     };
     if (!hasHeaderBlock(existingContent)) {
-      alert("Page must have at least one header block");
+      setNotification({ message: "Page must have at least one header block", type: "warning", seconds: 5000 })
       return;
     }
 
     if (!hasContentBlock(existingContent)) {
-      alert("Page must have at least one paragraph or image block");
+      setNotification({ message: "Page must have at least one paragraph or image block", type: "warning", seconds: 5000 })
       return;
     }
-    const resp = await editPage(_page);
-    routeHome()
+    try {
+      const resp = await editPage(_page);
+      setNotification({ message: `Page succesfully edited`, type: "info", seconds: 4000 })
+      routeHome()
+
+    } catch (error) {
+      setNotification({ message: `Page can not edited`, type: "danger", seconds: 5000 })
+
+    }
+
   };
   //// Form operations end
 
 
   useEffect(() => {
     const _page = async () => {
-      const authors = await getUsers();
+      const allAuthors = await getUsers();
       if (mode === 'edit' && renderCount.current === 0) {
         const page = await getPage(pageID);
-        console.log(authors)
         setExistingContent(page.content);
         setSelectedDate(page.publicationDate ? new Date(page.publicationDate) : "");
         setTitle(page.title)
-        setAuthors(authors)
+        setAuthors(allAuthors)
         setSelectedAuthor(page.username)
         setEditorMode('edit');
       } else {
@@ -162,13 +176,13 @@ const MyEditor = (props) => {
         setSelectedDate("");
         setTitle("")
         setSelectedAuthor(user.username)
-        setAuthors(authors)
+        setAuthors(allAuthors)
         setEditorMode('create');
       }
       renderCount.current = renderCount.current + 1;
     };
     _page();
-  }, [editorMode]);
+  }, [mode]);
 
   const routeHome = () => {
     navigate('/');
@@ -191,8 +205,8 @@ const MyEditor = (props) => {
     ));
   };
 
-  return (
-    <Container className="m-3 p-5 vh-100">
+  return (<>
+    < Container className="m-3 p-5 vh-100" >
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="contentTitle">
           <Form.Label>Title</Form.Label>
@@ -213,8 +227,10 @@ const MyEditor = (props) => {
                 disabled={(user.role === 'user') ? true : false}
                 onChange={handleAuthorChange}
               >
-                console.log(authors)
-                <option value="">{(user.role === 'admin' && editorMode === "edit") ? selectedAuthor : "Select an author"}</option>
+                {/* {console.log(authors)} */}
+                {/* {console.log(authors)} */}
+                {/* {(user.role === 'admin' && editorMode === "edit") ? <option value=""> </option>} */}
+                {/* <option value="">{(user.role === 'admin' && mode === "edit") ? selectedAuthor : "Select an author"}</option> */}
                 {authors.map((_author) => (
                   <option key={_author.id} value={_author.username}>
                     {_author.username}
@@ -262,7 +278,7 @@ const MyEditor = (props) => {
           )}
         </div>
       </Form>
-    </Container>
+    </Container ></>
   );
 };
 

@@ -30,5 +30,13 @@ INSERT INTO user (authorID, email, password, salt, username, role) VALUES (2, "s
 INSERT INTO user (authorID, email, password, salt, username, role) VALUES (3, "s297976@studenti.polito.it", "b8b0652d147985abe84413432df4f884e22db9c28f9e443e8487483e0b88cdd5", 'a90336f14c2aef5a', "Allen76", "user");
 INSERT INTO user (authorID, email, password, salt, username, role) VALUES (4, "s297975@studenti.polito.it", "dd3da41f2260b3a487c0520fe345480ee1e8203dfc766ad8833c966f489ffe96", 'c0c226a5ed262ece', "Kyle75", "admin");
 
+
+DROP TABLE IF EXISTS website;
+
+CREATE TABLE website (name VARCHAR (10));
+
+INSERT INTO website (name ) VALUES ("");
+
+
 COMMIT TRANSACTION;
 PRAGMA foreign_keys = on;

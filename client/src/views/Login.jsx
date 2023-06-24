@@ -5,34 +5,34 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useNavigate } from 'react-router-dom';
 import { logIn } from '../API/userAPI'
+import Notification from '../components/Alert';
 
-import { UserContext } from '../context/UserContext';
+import  UserContext  from '../context/UserContext';
 
 
 
 const LoginForm = (props) => {
   const navigate = useNavigate()
 
-  const { user, setUser, authenticated, setAuthenticated } = useContext(UserContext);
+  const { user, setUser, authenticated, setAuthenticated, notification, setNotification } = useContext(UserContext);
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  console.log(authenticated)
   const handleSubmit = async (event) => {
+    // console.log(username, password)
     try {
-
       event.preventDefault();
       const credentials = { username, password }
       const user = await logIn(credentials);
-      console.log(`FETCHED USER ${user}`)
       setUser({ "username": user.username, "email": user.email, "role": user.role })
       setAuthenticated(true)
+      setNotification({message: `${user.username} successfully logged in `, type:"success", seconds:4000})
       navigate("/")
 
     } catch (err) {
-      console.log(err);
-      // setMessage({msg: err, type: 'danger'});
+      setNotification({ message: 'Login failed. Please check your credentials.', type: 'danger', seconds:3000 });
+      // console.log("error occured")
     }
   };
 
@@ -40,6 +40,7 @@ const LoginForm = (props) => {
 
   return (
     <Container className='p-5'>
+      
       <Row>
         <Col xs={3}></Col>
         <Col>
@@ -60,6 +61,8 @@ const LoginForm = (props) => {
               Login
             </Button>
           </Form>
+          {notification && <div className="text-danger mt-2">{notification.message}</div>}
+
         </Col>
         <Col xs={3}></Col>
 

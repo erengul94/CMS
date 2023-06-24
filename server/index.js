@@ -84,6 +84,19 @@ app.get('/api/sessions/current', (req, res) => {
         res.status(401).json({ error: 'Not authenticated' });
 });
 
+// gives the current user in the current session.
+app.get('/website', async (req, res) => {
+    try {
+        const website = await new UserDAO().getWebSite()
+        res.status(200).send(website);
+    }
+    catch {
+        res.status(500).send("Error occured while fetching website")
+    }
+    
+
+});
+
 app.delete('/api/sessions/current', (req, res) => {
     req.logout(() => {
       res.end();
@@ -96,7 +109,7 @@ app.delete('/api/sessions/current', (req, res) => {
 
 app.get('/pages', async (req, res) => {
     try {
-        const pages = await new PageDAO().getPages('published', "publicationDate");
+        const pages = await new PageDAO().getPages("publicationDate");
         res.status(200).send(pages);
     }
     catch {
@@ -104,6 +117,8 @@ app.get('/pages', async (req, res) => {
     }
 });
 
+
+app.use(isLoggedIn); // I will protects rest of the api calls in the file.
 
 app.get('/page/:id', async (req, res) => {
     const pageID = req.params.id
@@ -117,19 +132,34 @@ app.get('/page/:id', async (req, res) => {
 });
 
 
-// app.use(isLoggedIn); // I will protects rest of the api calls in the file.
+
+app.put('/updateWebSiteName', async (req, res) => {
+    // console.log('is triggered')
+    try {
+        const newName = req.body.name
+        const isUpdated = await new UserDAO().updateWebSiteName(newName);
+        // console.log(isUpdated)
+        res.status(204).send(isUpdated);
+    }
+    catch (err) {
+        // console.log(err)
+        res.status(500).send("Error occured while creating name")
+    }
+});
+
+
 
 app.post('/createPage', async (req, res) => {
-    console.log("create page trriggered")
+    // console.log("create page trriggered")
     try {
         const pageData = req.body
-        console.log(pageData)
+        // console.log(pageData)
         const page = await defineStatus(pageData)
         const isCreated = await new PageDAO().createPage(page);
         res.status(201).send(true);
     }
     catch (err) {
-        console.log(err)
+        // console.log(err)
         res.status(500).send("Error occured while creating page")
     }
 
@@ -138,9 +168,9 @@ app.post('/createPage', async (req, res) => {
 app.put('/editPage/:id', async (req, res) => {
     try {
         const pageID = req.params.id
-        console.log(req.params)
-        console.log(pageID)
-        console.log("pageID")
+        // console.log(req.params)
+        // console.log(pageID)
+        // console.log("pageID")
 
         const updatedPage = req.body
         const page = await defineStatus(updatedPage)
@@ -148,10 +178,11 @@ app.put('/editPage/:id', async (req, res) => {
         res.status(204).send(isUpdated);
     }
     catch (err) {
-        console.log(err)
+        // console.log(err)
         res.status(500).send("Error occured while creating page")
     }
 });
+
 
 app.delete('/deletePage/:id', async (req, res) => {
     try {
@@ -167,17 +198,17 @@ app.delete('/deletePage/:id', async (req, res) => {
 
 
 app.get('/getUserPages', async (req, res) => {
-    console.log(req)
+    // console.log(req)
     try {
         const user = req.user
         // console.log(req.user)
-        console.log("req.user")
-        console.log(req.user)
+        // console.log("req.user")
+        // console.log(req.user)
         const pages = await new PageDAO().getPagesByUser(user);
         res.status(200).send(pages);
     }
     catch (err) {
-        console.log(err)
+        // console.log(err)
         res.status(500).send("Error occured while creating page")
     }
 
@@ -187,13 +218,25 @@ app.get('/getUserPages', async (req, res) => {
 app.get('/users', async (req, res) => {
     try {
         const users = await new UserDAO().getUsers();
-        console.log(users)
+        // console.log(users)
         res.status(200).send(users);
     }
     catch {
         res.status(500).send("Error occured while fetching pages")
     }
 });
+
+// app.get('/webSiteName', async (req, res) => {
+//     try {
+//         const users = await new UserDAO().getUsers();
+//         console.log(users)
+//         res.status(200).send(users);
+//     }
+//     catch {
+//         res.status(500).send("Error occured while fetching pages")
+//     }
+// });
+
 
 
 app.listen(PORT,

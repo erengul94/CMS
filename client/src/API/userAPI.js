@@ -49,6 +49,8 @@ async function getUsers() {
     }
 };
 
+
+
 const logOut = async () => {
     const response = await fetch(APIURL + '/api/sessions/current', {
         method: 'DELETE',

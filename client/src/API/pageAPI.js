@@ -8,7 +8,7 @@ async function getPages() {
         if (response.ok) {
             // process the response
             const pages = await response.json();
-            // console.log(pages)
+            // // console.log(pages)
             return pages;
         } else {
             // application error (404, 500, ...)
@@ -24,11 +24,13 @@ async function getPages() {
 async function getPage(pageID) {
     const url = APIURL + '/page/' + pageID;
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            credentials: 'include',
+        });
         if (response.ok) {
             // process the response
             const pages = await response.json();
-            // console.log(pages)
+            // // console.log(pages)
             return pages;
         } else {
             // application error (404, 500, ...)
@@ -51,7 +53,7 @@ async function getUserPage() {
         if (response.ok) {
             // process the response
             const pages = await response.json();
-            // console.log(pages)
+            // // console.log(pages)
             return pages;
         } else {
             // application error (404, 500, ...)
@@ -62,7 +64,7 @@ async function getUserPage() {
         // network error
         throw ex;
     }
-}
+};
 
 async function createPage(page) {
     const url = APIURL + '/createPage';
@@ -79,11 +81,11 @@ async function createPage(page) {
             return true;
         } else {
             const text = await response.text();
-            console.log(text);
+            // // console.log(text);
             throw new TypeError(text);
         }
     } catch (ex) {
-        console.log(ex);
+        // console.log(ex);
         throw ex;
     }
 }
@@ -91,7 +93,7 @@ async function createPage(page) {
 async function editPage(page) {
 
     const url = APIURL + `/editPage/${page.ID}`;
-    console.log(page)
+    // // console.log(page)
     try {
         const response = await fetch(url, {
             method: 'PUT',
@@ -106,22 +108,26 @@ async function editPage(page) {
             return true;
         } else {
             const text = await response.text();
-            console.log(text);
+            // console.log(text);
             throw new TypeError(text);
         }
     } catch (ex) {
-        console.log(ex);
+        // console.log(ex);
         throw ex;
     }
 
-}
+};
 
-async function deletePage(pageID) {
-
-    const url = APIURL + `/deletePage/${pageID}`;
+async function updateWebSiteName(name) {
+    const url = APIURL + '/updateWebSiteName';
+    // console.log("updatewebsite naem")
+    // console.log(name)
     try {
         const response = await fetch(url, {
-            method: 'DELETE',
+            method: 'PUT',
+            body: JSON.stringify({name}),
+            credentials: 'include',
+
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -130,15 +136,54 @@ async function deletePage(pageID) {
             return true;
         } else {
             const text = await response.text();
-            console.log(text);
+            // console.log(text);
             throw new TypeError(text);
         }
     } catch (ex) {
-        console.log(ex);
+        // console.log(ex);
+        throw ex;
+    }
+
+};
+
+async function deletePage(pageID) {
+
+    const url = APIURL + `/deletePage/${pageID}`;
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            credentials: "include",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (response.ok) {
+            return true;
+        } else {
+            const text = await response.text();
+            // console.log(text);
+            throw new TypeError(text);
+        }
+    } catch (ex) {
+        // console.log(ex);
         throw ex;
     }
 
 }
 
 
-export { getPages, createPage, deletePage, editPage, getPage, getUserPage };
+async function getWebSiteName() {
+    const response = await fetch(APIURL + '/website', {
+        credentials: 'include',
+    });
+    const user = await response.json();
+    if (response.ok) {
+        return user;
+    } else {
+        throw user;  // an object with the error coming from the server
+    }
+};
+
+
+
+export { getPages, createPage, deletePage, editPage, getPage, getUserPage, updateWebSiteName, getWebSiteName };

@@ -15,18 +15,18 @@ class PageDAO {
         this.db = dbObj
     }
 
-    async getPages(status, sortByField) {
-        console.log("get pages");
-        console.log(sortByField)
+    async getPages(sortByField) {
+        // console.log("get pages");
+        // console.log(sortByField)
         let sql = ""
         return new Promise((resolve, reject) => {
             if (sortByField === "publicationDate") {
-                sql = 'SELECT * FROM page WHERE status = ? ORDER BY publicationDate DESC';
+                sql = 'SELECT * FROM page ORDER BY publicationDate DESC';
             }
             else {
-                sql = 'SELECT * FROM page WHERE status = ? ORDER BY creationDate DESC';
+                sql = 'SELECT * FROM page ORDER BY creationDate DESC';
             }
-            this.db.all(sql, [status], (err, rows) => {
+            this.db.all(sql, [], (err, rows) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -48,7 +48,7 @@ class PageDAO {
     }
 
     async getPagesByUser(user) {
-        console.log("get pages");
+        // console.log("get pages");
     
         return new Promise((resolve, reject) => {
             const sql = 'SELECT * FROM page WHERE username = ? ORDER BY creationDate DESC';
@@ -73,8 +73,8 @@ class PageDAO {
     }
 
     async getPage(pageID) {
-        console.log("pageID");
-        console.log(pageID);
+        // console.log("pageID");
+        // console.log(pageID);
 
         return new Promise((resolve, reject) => {
             const sql = 'SELECT * FROM page WHERE id = ?';
@@ -83,7 +83,7 @@ class PageDAO {
                     reject(err);
                 } else {
                     try {
-                        console.log(row)
+                        // console.log(row)
                         const page = {
                             ID: row.id,
                             username: row.username,
@@ -104,9 +104,9 @@ class PageDAO {
     }
 
     async createPage(page) {
-        console.log("CREATED page is triggered")
+        // console.log("CREATED page is triggered")
 
-        console.log(page)
+        // console.log(page)
         return new Promise((resolve, reject) => {
             const sql = 'INSERT INTO page (username, creationDate, publicationDate, status, content, title) VALUES(?,?,?,?,?,?)';
             this.db.run(sql, [page.username, page.creationDate, page.publicationDate, page.status, page.content, page.title], (err) => {
@@ -120,9 +120,9 @@ class PageDAO {
     }
 
     async editPage(pageID, updatedPage) {
-        console.log("updatedContent")
+        // console.log("updatedContent")
 
-        console.log(updatedPage)
+        // console.log(updatedPage)
         return new Promise((resolve, reject) => {
             const sql = 'UPDATE page SET content = ?, username = ?, title = ?, publicationDate = ?, status = ? WHERE ID = ?';
             this.db.run(sql, [updatedPage.content, updatedPage.username, updatedPage.title, updatedPage.publicationDate, updatedPage.status, pageID], function (err) {

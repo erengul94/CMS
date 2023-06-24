@@ -18,7 +18,7 @@ class UserDAO {
     }
 
     async getUser(username, password) {
-        console.log("user requested")
+        // console.log("user requested")
         return new Promise((resolve, reject) => {
             // to check the passwords are match, we should retreive the user with it's identifier
             const sql = 'SELECT * FROM user WHERE username = ?';
@@ -32,7 +32,7 @@ class UserDAO {
                 }
                 else {
                     const user = { id: row.authorID, username: row.username, role: row.role, email: row.email };
-                    console.log(user)
+                    // console.log(user)
                     // compute hash password with comming user password with salt which computes the hashedPassword
                     crypto.scrypt(password, row.salt, 32, function (err, hashedPassword) {
                         if (err) reject(err);
@@ -63,6 +63,36 @@ class UserDAO {
             });
         });
     }
+
+    async updateWebSiteName(newName) {
+        return new Promise((resolve, reject) => {
+            const sql = 'UPDATE website SET name = ?';
+            this.db.run(sql, [newName], (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(
+                        true
+                    );
+                }
+            });
+        });
+    }
+
+    async getWebSite() {
+        return new Promise((resolve, reject) => {
+            const sql = 'SELECT * FROM website';
+            this.db.get(sql, (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const website = { "name": row.name }
+                    resolve(website);
+                }
+            });
+        });
+    }
+
 
 
 }
