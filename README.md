@@ -113,8 +113,8 @@
 
 ## Example Screenshot
 
-![Screenshot](./img/front-office.png)
-![Screenshot](./img/back-office.png)
+![Screenshot](./img/list-of-pages.png)
+![Screenshot](./img/create-page.png)
 
 
 ## Users Credentials
